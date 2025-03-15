@@ -22,8 +22,20 @@ j = 0
 #         break
 #     print(i)
 #     j+=1
-event = InotifyEvent.IN_CLOSE_WRITE | InotifyEvent.IN_CREATE | InotifyEvent.IN_MODIFY
-watcher = Watcher().add(path1).on(event)
-with watcher as data:
-    for event in data:
-        print(event)
+RELOAD_EVENTS = (
+    InotifyEvent.IN_MODIFY
+    | InotifyEvent.IN_CLOSE_WRITE
+    | InotifyEvent.IN_MOVED_TO
+    | InotifyEvent.IN_CREATE
+)
+watcher = Watcher().add(path1).on(RELOAD_EVENTS)
+# with watcher as data:
+#     for event in data:
+#         print(event)
+
+# print(path1.get_dirs())
+from src.Command import Command
+command = Command("python3 example/test.py")
+for data in watcher.read_events():
+    if data:
+        command.run()

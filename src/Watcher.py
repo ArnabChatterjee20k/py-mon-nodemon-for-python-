@@ -4,7 +4,7 @@ from .Inotify import (
     inotify_rm_watch,
     InotifyEvent,
     InotifyEventStructure,
-    EVENT_BUFFER_SIZE
+    EVENT_BUFFER_SIZE,
 )
 import os, select
 from .WatcherPath import WatcherPath
@@ -18,7 +18,7 @@ class Watcher:
         self._buffer = Buffer()
         self.paths: list[WatcherPath] = []
         self.path_wd_map = {}
-        self.event = InotifyEvent.IN_ACCESS
+        self.event = None
 
     def __enter__(self):
         self._event_generator = self.read_events()
@@ -29,15 +29,15 @@ class Watcher:
 
     def add(self, *paths: WatcherPath):
         self.paths.extend(paths)
-        for path in paths:
-            self._add_watch(path)
         return self
 
     def on(self, event: InotifyEvent):
         self.event = event
+        for path in self.paths:
+            self._add_watch(path)
         return self
-    
-    def on_path(self,path,event):
+
+    def on_path(self, path, event):
         """Map path to events"""
         pass
 
@@ -46,16 +46,21 @@ class Watcher:
         for path in dirs:
             byte_path = str(path).encode()
             wd = inotify_add_watch(self._inotify_fd, byte_path, self.event)
+            if wd == -1:
+                raise Exception("Not able to add watcher")
             self.path_wd_map[wd] = path
-    
+
     def read_events(self):
         while True:
-            data = os.read(self._inotify_fd,EVENT_BUFFER_SIZE)
+            data = os.read(self._inotify_fd, EVENT_BUFFER_SIZE)
             for event in InotifyEvent.parse_event(data):
-                IN_ACCESS_EVENT = event.mask & InotifyEvent.IN_ACCESS or event.len == 0
-                if IN_ACCESS_EVENT:
-                    continue
-                yield event
+                # IN_ACCESS_EVENT = event.mask & InotifyEvent.IN_ACCESS or event.len == 0
+                # print(f"Raw event: mask={event.mask}, name={event.name}")
+                if event.mask & self.event:
+                    # print(f"Triggering command, event- {event.mask & self.event}")
+                    yield event
+                else:
+                    print(f"Filtered out event with mask: {event.mask}")
 
     def _remove_watch(self):
         pass

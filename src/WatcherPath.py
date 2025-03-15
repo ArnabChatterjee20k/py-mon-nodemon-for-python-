@@ -19,7 +19,8 @@ class WatcherPath:
     def get_dirs(self):
         if self.recursive:
             paths = []
-            for path in self._get_all_dirs():
+            dir = self._get_all_dirs()
+            for path in dir:
                 paths.append(path)
             return paths
         return [self._path.resolve()]
@@ -31,7 +32,7 @@ class WatcherPath:
                 for ignored in self.ignore:
                     if dirpath_watcher_instance.contains(ignored):
                         continue
-                    yield pathlib.Path(dirpath).resolve()
+                yield pathlib.Path(dirpath).resolve()
 
     def contains(self, path: "WatcherPath"):
         # getting the absolute path of _path and path
