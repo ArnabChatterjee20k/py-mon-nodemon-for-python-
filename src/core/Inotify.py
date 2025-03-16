@@ -73,15 +73,16 @@ class InotifyEvent:
         FORMAT = "iIII"
         i = 0
         min_event_size = 16
+        extra_byte_padding = b"\0"
         while i + min_event_size <= len(binary_data):
             wd, mask, cookie, length = struct.unpack_from(FORMAT, binary_data, i)
-            name_offset = i + min_event_size
-            name_end = i + min_event_size + length
-            name = binary_data[name_offset:name_end].rstrip(b"\0")
-            i += min_event_size + length
+            name_start = i + min_event_size
+            name_end = name_start + length
+            name = binary_data[name_start:name_end].rstrip(extra_byte_padding)
             yield InotifyEventData(
-                wd=wd, mask=mask, cookie=cookie, name=name, len=length
+                wd=wd, name=name, cookie=cookie, len=length, mask=mask
             )
+            i += min_event_size + length
 
 
 # in bytes
@@ -95,4 +96,6 @@ inotify_init = CFUNCTYPE(c_int, use_errno=True)(("inotify_init", libc))
 inotify_add_watch = CFUNCTYPE(c_int, c_int, c_char_p, c_uint32, use_errno=True)(
     ("inotify_add_watch", libc)
 )
-inotify_rm_watch = CFUNCTYPE(c_int, use_errno=True)(("inotify_rm_watch", libc))
+inotify_rm_watch = ctypes.CFUNCTYPE(c_int, c_int, c_uint32, use_errno=True)(
+    ("inotify_rm_watch", libc)
+)
