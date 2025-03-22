@@ -57,12 +57,20 @@ from src.core.Watcher import Watcher
 watcher = Watcher().add_path(core_path, test_path).add_event(RELOAD_EVENTS)
 command = Command("python3 example/hellow.py")
 print(watcher._wd_path_map)
+from src.core.Buffer import Buffer
+
+buffer = Buffer()
+watcher.publish_to(buffer)
 try:
     with watcher as watch_events:
-        for data in watch_events:
-            print(data)
-            if data:
+        for file_path, event in watch_events:
+            if file_path:
+                # may produce duplicate events
+                # Debouncing at the consuemr level
                 command.run()
 except Exception as e:
     print(e)
     print("exception")
+
+
+

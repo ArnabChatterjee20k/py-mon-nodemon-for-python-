@@ -4,7 +4,7 @@ import subprocess
 class Command:
     def __init__(self, command: str):
         self.command = command
-        self._process:subprocess.Popen = None
+        self._process: subprocess.Popen = None
 
     def run(self):
         self._terminate()
@@ -18,13 +18,12 @@ class Command:
         )
         try:
             for line in self._process.stdout:
-                print(line,end="")
-            
+                print(line, end="")
+
             for line in self._process.stderr:
-                print(line,end="")
+                print(line, end="")
         except KeyboardInterrupt as e:
             self._terminate()
-        
 
     def _terminate(self):
         if self._process:

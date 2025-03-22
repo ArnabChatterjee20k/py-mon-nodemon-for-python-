@@ -19,6 +19,7 @@ class Watcher:
         self._inoitfy_fd = inotify_init()
         self._wd_path_map = {}
         self.watch_event = InotifyEvent.IN_ALL_EVENTS
+        self.running = True
 
     def __enter__(self):
         event_gen = self.read_events()
@@ -44,19 +45,24 @@ class Watcher:
 
     def read_events(self):
         # TODO: make it epoll instead of read
-        while True:
+        while self.running:
             try:
                 events_stream = os.read(self._inoitfy_fd, EVENT_BUFFER_SIZE)
                 for wd, mask, cookie, length, name in InotifyEvent.parse_event(
                     events_stream
                 ):
-                    if self.watch_event & mask:
+                    if (self.watch_event & mask) and length and name:
                         path = self._wd_path_map[wd]
-                        path+=""if path.endswith("/") else "/"
-                        yield path + name.decode()
+                        path += "" if path.endswith("/") else "/"
+                        event_file_source = path + name.decode()
+                        if self.buffer:
+                            print("pushing")
+                            self.buffer.push(event_file_source)
+                        yield event_file_source, mask
             except KeyboardInterrupt:
                 print("Closing....")
                 self._remove_watch()
+                self.stop()
                 break
 
     def _add_watch(self):
@@ -75,6 +81,9 @@ class Watcher:
         for event in events[1:]:
             mask |= event
         self.watch_event = mask
+
+    def stop(self):
+        self.running = False
 
     def _remove_watch(self):
         for wd in list(self._wd_path_map):
