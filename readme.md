@@ -1,17 +1,25 @@
-### Py-mon
+# Py-mon
 what's your favourite pokemon? Mine is "Greninja".
+```bash
+python3 -m src.cli run "your command"
+```
+
+## Scratchpad for me(you can ignore)
+> For related infos either go to knowledge dump or optimising storing paths
 
 ### TODO
-[] inotify event bitmaks
-[] inotify event structures
-[] parsing event from the structure and event_buffer
+[x] inotify event bitmaks
+[x] inotify event structures
+[x] parsing event from the structure and event_buffer
  
-[] init inotify
-[] close inotify
-[] add watch
-[] add watch to dir => watch every files
-[] reading all registered events => queue
-[] run the registered command
+[x] init inotify
+[x] close inotify
+[x] add watch
+[x] add watch to dir => watch every files
+[x] reading all registered events => queue
+[x] run the registered command
+[ ] Using epoll instead of plain reading fds using os.read
+[ ] extend api and cli to watch and control and taking actions for each files. May be a few tweaks
 
 ### Watcher API design plan
 ```py
@@ -69,4 +77,3 @@ When you call read() on an inotify file descriptor, the process stops and waits 
     * The CPU is idle or underutilized.
     * The app can become unresponsive.
 
-### Making the whole flow event driven and async using epoll(event poll)
