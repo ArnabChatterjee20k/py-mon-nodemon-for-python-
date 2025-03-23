@@ -7,8 +7,9 @@ def cli():
 
 @cli.command()
 @click.argument("command")
-def run(command):
-    pymon = PyMon(command)
+@click.option("--ignore",multiple=True)
+def run(command,ignore=()):
+    pymon = PyMon(command,list(ignore))
     try:
         pymon.start()
     except KeyboardInterrupt:

@@ -3,6 +3,12 @@ what's your favourite pokemon? Mine is "Greninja".
 ```bash
 python3 -m src.cli run "your command"
 ```
+or
+```bash
+pip install -e .
+pymon run "app.py"
+pymon run "app.py" --ignore .venv
+```
 
 ## Scratchpad for me(you can ignore)
 > For related infos either go to knowledge dump or optimising storing paths

@@ -18,12 +18,13 @@ RELOAD_EVENTS = (
 
 
 class PyMon:
-    def __init__(self, command: str):
+    def __init__(self, command: str,ignore_files:list[str]=[]):
         self._command = Command(command)
         self._buffer = Buffer()
         self._consumer = None
         self._watcher = None
         self.running = False
+        self.ignore = ignore_files
 
     def _read_watch_streams(self):
         """
@@ -32,10 +33,10 @@ class PyMon:
         """
         current_path = os.getcwd()
         logging.info(f"Starting PyMon in path: {current_path}")
-        logging.info(WatcherPath(current_path).get_dirs())
+        logging.info(WatcherPath(current_path,ignore=self.ignore,recursive=True).get_dirs())
         self._watcher = Watcher()
         self._watcher.add_event(RELOAD_EVENTS).add_path(
-            WatcherPath(current_path)
+            WatcherPath(current_path,ignore=self.ignore,recursive=True)
         ).publish_to(self._buffer)
         with self._watcher as watcher:
             for file_path in watcher:
