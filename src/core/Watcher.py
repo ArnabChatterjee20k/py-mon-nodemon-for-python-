@@ -57,7 +57,7 @@ class Watcher:
                         event_file_source = path + name.decode()
                         if self.buffer:
                             print("pushing")
-                            self.buffer.push(event_file_source)
+                            self.buffer.push((event_file_source, mask))
                         yield event_file_source, mask
             except KeyboardInterrupt:
                 print("Closing....")

@@ -10,6 +10,6 @@ class Buffer:
 
     def pop(self):
         return self._q.get()
-    
+
     def is_empty(self):
         return self._q.empty()
