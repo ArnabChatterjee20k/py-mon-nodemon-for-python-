@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymon"
+version = "0.1.0"
+
+dependencies = [
+    "psutil>=7.0.0",
+    "click>=8.0.0",
+]
+
+[project.scripts]
+pymon = "pymon.cli:cli"
+
+[tool.setuptools]
+packages = ["pymon"]
+package-dir = {"" = "src"}

@@ -20,5 +20,5 @@ def config():
     """for generating a global config file"""
     pass
 
-if __name__ == "__main__":
-    cli()
+# if __name__ == "__main__":
+#     cli()

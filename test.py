@@ -22,7 +22,7 @@
 # #         break
 # #     print(i)
 # #     j+=1
-from src.core.Inotify import InotifyEvent
+from src.pymon.core.Inotify import InotifyEvent
 
 RELOAD_EVENTS = (
     InotifyEvent.IN_MODIFY
@@ -43,7 +43,7 @@ RELOAD_EVENTS = (
 #         command.run()
 
 
-from src.core.WatcherPath import WatcherPath
+from src.pymon.core.WatcherPath import WatcherPath
 
 core_path = WatcherPath(
     "/home/arnab/Desktop/system-implementations/py-mon/src/core", ignore=[]
@@ -51,13 +51,13 @@ core_path = WatcherPath(
 test_path = WatcherPath(
     "/home/arnab/Desktop/system-implementations/py-mon/example", ignore=[]
 )
-from src.core.Command import Command
-from src.core.Watcher import Watcher
+from src.pymon.core.Command import Command
+from src.pymon.core.Watcher import Watcher
 
 watcher = Watcher().add_path(core_path, test_path).add_event(RELOAD_EVENTS)
 command = Command("python3 example/hellow.py")
 print(watcher._wd_path_map)
-from src.core.Buffer import Buffer
+from src.pymon.core.Buffer import Buffer
 
 buffer = Buffer()
 watcher.publish_to(buffer)
